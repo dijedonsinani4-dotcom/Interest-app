@@ -60,51 +60,59 @@ export function InterestsSection({ userId, initialInterests }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <form onSubmit={handleAdd} className="flex flex-col gap-3 sm:flex-row sm:items-end">
-        <label className="block flex-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Add an interest
+    <div className="flex flex-col gap-5">
+      <form
+        onSubmit={handleAdd}
+        className="flex flex-col gap-3 rounded-2xl border border-zinc-200/90 bg-white/70 p-4 dark:border-white/[0.08] dark:bg-zinc-950/35 sm:flex-row sm:items-end sm:gap-3 sm:p-4"
+      >
+        <label className="block min-w-0 flex-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <span className="font-mono text-[11px] uppercase tracking-wider text-emerald-600/90 dark:text-emerald-400/90">
+            New tag
+          </span>
           <input
             type="text"
             name="interest"
             maxLength={60}
             autoComplete="off"
-            placeholder="e.g. photography, chess, jazz"
+            placeholder="photography · chess · jazz…"
             value={label}
             onChange={(e) => setLabel(e.target.value)}
-            className="mt-1.5 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 outline-none ring-zinc-400 focus:ring-2 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+            className="mt-2 w-full rounded-xl border border-zinc-300/90 bg-white px-3.5 py-2.5 text-zinc-900 placeholder:text-zinc-400 outline-none ring-2 ring-transparent transition focus:border-emerald-500/50 focus:ring-emerald-500/20 dark:border-white/[0.12] dark:bg-zinc-900/80 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-emerald-400/40 dark:focus:ring-emerald-400/15"
           />
         </label>
         <button
           type="submit"
           disabled={loading || !label.trim()}
-          className="rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+          className="shrink-0 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/20 transition hover:brightness-110 active:scale-[0.98] disabled:opacity-45 disabled:hover:brightness-100 dark:from-violet-500 dark:to-fuchsia-500 dark:shadow-fuchsia-500/15"
         >
-          {loading ? "Adding…" : "Add"}
+          {loading ? "Saving…" : "Add"}
         </button>
       </form>
 
       {error ? (
-        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+        <p
+          className="rounded-xl border border-red-500/30 bg-red-500/5 px-3 py-2 text-sm text-red-700 dark:text-red-300"
+          role="alert"
+        >
           {error}
         </p>
       ) : null}
 
       {initialInterests.length === 0 ? (
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          No interests yet. Add a few to find people who share them.
+        <p className="rounded-xl bg-zinc-100/70 px-3 py-3 text-center text-sm text-zinc-600 dark:bg-white/[0.04] dark:text-zinc-500">
+          No tags yet — drop one in above to seed your taste graph.
         </p>
       ) : (
-        <ul className="flex flex-wrap gap-2">
+        <ul className="flex flex-wrap gap-2.5">
           {initialInterests.map((item) => (
             <li key={item.interest_id}>
-              <span className="inline-flex items-center gap-1 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-sm text-zinc-800 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/[0.08] px-3.5 py-1.5 text-sm font-medium text-zinc-800 ring-1 ring-emerald-500/10 backdrop-blur-sm dark:border-emerald-400/22 dark:bg-emerald-500/10 dark:text-emerald-100/95 dark:ring-emerald-400/12">
                 {item.name}
                 <button
                   type="button"
                   onClick={() => removeInterest(item.interest_id)}
                   disabled={removing === item.interest_id}
-                  className="ml-1 rounded-full p-0.5 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-900 disabled:opacity-50 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                  className="-mr-1 rounded-full p-1 text-zinc-500 transition hover:bg-emerald-500/20 hover:text-zinc-900 disabled:opacity-50 dark:text-emerald-200/55 dark:hover:bg-emerald-500/25 dark:hover:text-white"
                   aria-label={`Remove ${item.name}`}
                 >
                   ×

@@ -9,7 +9,7 @@ npm install
 cp .env.example .env.local
 ```
 
-Fill in `.env.local` with your Supabase **Project URL** and **anon** key (not the `service_role` key). Apply SQL from `supabase/migrations/` in order (Phase 4, then Phase 5) in the Supabase SQL editor.
+Fill in `.env.local`: **Project URL**, **anon** key, and **`SUPABASE_SERVICE_ROLE_KEY`** (server-only — required for `/api/anonymous-interests`). Apply SQL from `supabase/migrations/` in order — Phase 4, 5, 6 (`20260508120000…`), then if your `anonymous_interests` table lacks `normalized_label`, run `20260509130000_anonymous_interests_normalized_label.sql` — in the Supabase SQL editor.
 
 ```bash
 npm run dev
@@ -21,8 +21,15 @@ Open [http://localhost:3000](http://localhost:3000).
 
 1. Create a production Supabase project (or use the same one) and run the same migrations.
 2. In Supabase: **Authentication → URL configuration** — set **Site URL** to your deployed origin (e.g. `https://your-app.vercel.app`) and add **Redirect URLs** including `https://your-app.vercel.app/auth/callback`.
-3. In Vercel (or your host): set env vars `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` to match production.
-4. Deploy the repo; smoke-test sign-up, login, dashboard matching, and `/settings`.
+3. In Vercel (or your host): set `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and **`SUPABASE_SERVICE_ROLE_KEY`** (mark as sensitive; not exposed to the browser).
+4. Deploy the repo; smoke-test sign-up, login, dashboard matching, `/settings`, and `POST /api/anonymous-interests` with JSON `{"label":"photography"}`.
+
+## Anonymous interest API
+
+`POST /api/anonymous-interests`
+
+- Body: `{ "label": "…" }` or `{ "interest": "…" }` (trimmed length 1–60; same constraint as logged-in interests).
+- Response: `201` with `{ "id": "<uuid>" }`; `400` for bad input; `503` if service role env is missing.
 
 ## Stack
 

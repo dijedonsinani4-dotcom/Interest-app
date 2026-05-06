@@ -1,3 +1,4 @@
+import { AppAmbienceLayers } from "@/components/member-page-shell";
 import { MarketingHeader } from "@/components/marketing-header";
 
 export default function MarketingLayout({
@@ -6,9 +7,10 @@ export default function MarketingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-full flex-1 flex-col">
+    <div className="relative isolate flex min-h-full flex-1 flex-col overflow-hidden">
+      <AppAmbienceLayers />
       <MarketingHeader />
-      {children}
+      <div className="relative flex flex-1 flex-col">{children}</div>
     </div>
   );
 }

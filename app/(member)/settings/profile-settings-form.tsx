@@ -53,9 +53,11 @@ export function ProfileSettingsForm({ initialDisplayName }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-        Display name
+        <span className="font-mono text-[11px] uppercase tracking-wider text-emerald-600/90 dark:text-emerald-400/90">
+          Display name
+        </span>
         <input
           type="text"
           name="displayName"
@@ -64,16 +66,19 @@ export function ProfileSettingsForm({ initialDisplayName }: Props) {
           maxLength={80}
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
-          className="mt-1.5 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 outline-none ring-zinc-400 focus:ring-2 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+          className="mt-2 w-full rounded-xl border border-zinc-300/90 bg-white px-3.5 py-2.5 text-zinc-900 outline-none ring-2 ring-transparent transition focus:border-emerald-500/50 focus:ring-emerald-500/20 dark:border-white/[0.12] dark:bg-zinc-900/80 dark:text-zinc-100 dark:focus:border-emerald-400/40 dark:focus:ring-emerald-400/15"
         />
       </label>
       {error ? (
-        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+        <p
+          className="rounded-xl border border-red-500/30 bg-red-500/5 px-3 py-2 text-sm text-red-700 dark:text-red-300"
+          role="alert"
+        >
           {error}
         </p>
       ) : null}
       {saved ? (
-        <p className="text-sm text-emerald-700 dark:text-emerald-400">
+        <p className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-800 dark:text-emerald-300">
           Saved.
         </p>
       ) : null}
@@ -81,13 +86,13 @@ export function ProfileSettingsForm({ initialDisplayName }: Props) {
         <button
           type="submit"
           disabled={loading}
-          className="rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+          className="rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/20 transition hover:brightness-110 active:scale-[0.98] disabled:opacity-45 disabled:hover:brightness-100 dark:from-violet-500 dark:to-fuchsia-500 dark:shadow-fuchsia-500/15"
         >
           {loading ? "Saving…" : "Save"}
         </button>
         <Link
           href="/dashboard"
-          className="rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-medium text-zinc-900 transition hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-100 dark:hover:bg-zinc-800"
+          className="inline-flex items-center justify-center rounded-xl border border-white/70 bg-white/80 px-5 py-2.5 text-sm font-semibold text-zinc-900 transition hover:bg-white dark:border-white/[0.12] dark:bg-zinc-900/60 dark:text-zinc-100 dark:hover:bg-zinc-900/90"
         >
           Cancel
         </Link>
