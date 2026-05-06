@@ -2,14 +2,22 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
-    request,
-  });
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+  if (!supabaseUrl?.trim() || !supabaseAnonKey?.trim()) {
+    return new NextResponse(
+      "Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY. Add both under Vercel → Settings → Environment Variables for Production, then redeploy.",
+      { status: 500, headers: { "content-type": "text/plain; charset=utf-8" } },
+    );
+  }
+
+  try {
+    let response = NextResponse.next({
+      request,
+    });
+
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -26,41 +34,47 @@ export async function middleware(request: NextRequest) {
           );
         },
       },
-    },
-  );
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const path = request.nextUrl.pathname;
-
-  const needsAuth =
-    path.startsWith("/dashboard") ||
-    path.startsWith("/settings") ||
-    path.startsWith("/u/");
-
-  if (!user && needsAuth) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("next", path);
-    const redirectResponse = NextResponse.redirect(loginUrl);
-    response.cookies.getAll().forEach(({ name, value }) => {
-      redirectResponse.cookies.set(name, value);
     });
-    return redirectResponse;
-  }
 
-  if (user && (path === "/login" || path === "/signup")) {
-    const redirectResponse = NextResponse.redirect(
-      new URL("/dashboard", request.url),
-    );
-    response.cookies.getAll().forEach(({ name, value }) => {
-      redirectResponse.cookies.set(name, value);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const path = request.nextUrl.pathname;
+
+    const needsAuth =
+      path.startsWith("/dashboard") ||
+      path.startsWith("/settings") ||
+      path.startsWith("/u/");
+
+    if (!user && needsAuth) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("next", path);
+      const redirectResponse = NextResponse.redirect(loginUrl);
+      response.cookies.getAll().forEach(({ name, value }) => {
+        redirectResponse.cookies.set(name, value);
+      });
+      return redirectResponse;
+    }
+
+    if (user && (path === "/login" || path === "/signup")) {
+      const redirectResponse = NextResponse.redirect(
+        new URL("/dashboard", request.url),
+      );
+      response.cookies.getAll().forEach(({ name, value }) => {
+        redirectResponse.cookies.set(name, value);
+      });
+      return redirectResponse;
+    }
+
+    return response;
+  } catch (err) {
+    console.error("middleware error", err);
+    return new NextResponse("Middleware failed. Check Vercel logs and Supabase env vars.", {
+      status: 500,
+      headers: { "content-type": "text/plain; charset=utf-8" },
     });
-    return redirectResponse;
   }
-
-  return response;
 }
 
 export const config = {
