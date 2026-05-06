@@ -1,7 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
+/** Next.js 16+: use `proxy` (Node runtime) instead of deprecated Edge `middleware`. */
+export async function proxy(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -69,11 +70,14 @@ export async function middleware(request: NextRequest) {
 
     return response;
   } catch (err) {
-    console.error("middleware error", err);
-    return new NextResponse("Middleware failed. Check Vercel logs and Supabase env vars.", {
-      status: 500,
-      headers: { "content-type": "text/plain; charset=utf-8" },
-    });
+    console.error("proxy error", err);
+    return new NextResponse(
+      "Proxy failed. Check Vercel logs and Supabase env vars.",
+      {
+        status: 500,
+        headers: { "content-type": "text/plain; charset=utf-8" },
+      },
+    );
   }
 }
 
