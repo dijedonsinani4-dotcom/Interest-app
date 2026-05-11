@@ -17,6 +17,12 @@ export async function MarketingHeader() {
           Interest app
         </Link>
         <nav className="flex shrink-0 items-center gap-2 sm:gap-3">
+          <Link
+            href="/terms"
+            className="rounded-lg px-2 py-1.5 text-sm font-medium text-zinc-500 transition hover:bg-violet-500/10 hover:text-violet-800 dark:text-zinc-500 dark:hover:text-violet-200"
+          >
+            Terms
+          </Link>
           {user ? (
             <>
               <Link

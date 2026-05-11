@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { ProfileAvatar } from "@/components/profile-avatar";
 import { MemberGlassSection, MemberPageShell } from "@/components/member-page-shell";
 import { getProfileForViewer } from "@/lib/profile-view";
 import { createClient } from "@/lib/supabase/server";
@@ -45,25 +46,33 @@ export default async function PublicProfilePage({ params }: Props) {
 
   return (
     <MemberPageShell>
-      <header className="space-y-1">
-        <p className="font-mono text-[11px] font-medium uppercase tracking-[0.28em] text-violet-600/90 dark:text-violet-400/90">
-          {kicker}
-        </p>
-        <h1 className="bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900 bg-clip-text text-[1.65rem] font-semibold tracking-tight text-transparent dark:from-zinc-100 dark:via-zinc-300 dark:to-zinc-100 sm:text-[1.85rem]">
-          {heading}
-        </h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">{sub}</p>
-        {profile.is_self ? (
-          <Link
-            href="/settings"
-            className="group mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-violet-500/35 bg-violet-500/5 px-4 py-2 text-sm font-medium text-violet-800 transition hover:border-violet-400/55 hover:bg-violet-500/10 dark:border-violet-400/35 dark:bg-violet-500/10 dark:text-violet-200 dark:hover:border-violet-300/45 dark:hover:bg-violet-500/15"
-          >
-            <span>Edit settings</span>
-            <span className="transition group-hover:translate-x-0.5" aria-hidden>
-              →
-            </span>
-          </Link>
-        ) : null}
+      <header className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-8">
+        <ProfileAvatar
+          displayName={heading}
+          avatarUrl={profile.avatar_url}
+          size={112}
+          className="shrink-0"
+        />
+        <div className="min-w-0 flex-1 space-y-1">
+          <p className="font-mono text-[11px] font-medium uppercase tracking-[0.28em] text-violet-600/90 dark:text-violet-400/90">
+            {kicker}
+          </p>
+          <h1 className="bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900 bg-clip-text text-[1.65rem] font-semibold tracking-tight text-transparent dark:from-zinc-100 dark:via-zinc-300 dark:to-zinc-100 sm:text-[1.85rem]">
+            {heading}
+          </h1>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">{sub}</p>
+          {profile.is_self ? (
+            <Link
+              href="/settings"
+              className="group mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-violet-500/35 bg-violet-500/5 px-4 py-2 text-sm font-medium text-violet-800 transition hover:border-violet-400/55 hover:bg-violet-500/10 dark:border-violet-400/35 dark:bg-violet-500/10 dark:text-violet-200 dark:hover:border-violet-300/45 dark:hover:bg-violet-500/15"
+            >
+              <span>Edit settings</span>
+              <span className="transition group-hover:translate-x-0.5" aria-hidden>
+                →
+              </span>
+            </Link>
+          ) : null}
+        </div>
       </header>
 
       <MemberGlassSection

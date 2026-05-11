@@ -13,11 +13,16 @@ export default function SignupPage() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setMessage(null);
+    if (!acceptedTerms) {
+      setError("Please agree to the Terms of Service to create an account.");
+      return;
+    }
     setLoading(true);
     const supabase = createClient();
     const { data, error: signUpError } = await supabase.auth.signUp({
@@ -92,6 +97,30 @@ export default function SignupPage() {
               className="mt-1.5 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 outline-none ring-zinc-400 focus:ring-2 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
             />
           </label>
+          <label className="flex cursor-pointer items-start gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+            <input
+              name="acceptedTerms"
+              type="checkbox"
+              checked={acceptedTerms}
+              onChange={(e) => {
+                setAcceptedTerms(e.target.checked);
+                if (e.target.checked) {
+                  setError(null);
+                }
+              }}
+              className="mt-0.5 h-4 w-4 shrink-0 rounded border-zinc-300 text-zinc-900 focus:ring-2 focus:ring-zinc-400 dark:border-zinc-600 dark:bg-zinc-900 dark:focus:ring-zinc-500"
+            />
+            <span>
+              I agree to the{" "}
+              <Link
+                href="/terms"
+                className="font-medium text-zinc-900 underline decoration-zinc-400/60 underline-offset-2 dark:text-zinc-100"
+              >
+                Terms of Service
+              </Link>
+              .
+            </span>
+          </label>
           {error ? (
             <p className="text-sm text-red-600 dark:text-red-400" role="alert">
               {error}
@@ -104,7 +133,7 @@ export default function SignupPage() {
           ) : null}
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !acceptedTerms}
             className="mt-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
           >
             {loading ? "Creating account…" : "Sign up"}

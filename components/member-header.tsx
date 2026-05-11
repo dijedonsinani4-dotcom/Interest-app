@@ -31,6 +31,12 @@ export async function MemberHeader() {
             >
               Settings
             </Link>
+            <Link
+              href="/terms"
+              className="transition hover:text-zinc-900 dark:hover:text-zinc-100"
+            >
+              Terms
+            </Link>
             {user ? (
               <Link
                 href={`/u/${user.id}`}

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { MemberGlassSection, MemberPageShell } from "@/components/member-page-shell";
 import { createClient } from "@/lib/supabase/server";
+import { AvatarSettings } from "./avatar-settings";
 import { ProfileSettingsForm } from "./profile-settings-form";
 
 export default async function SettingsPage() {
@@ -16,11 +17,15 @@ export default async function SettingsPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("display_name")
+    .select("display_name, avatar_url")
     .eq("id", user.id)
     .maybeSingle();
 
   const displayName = profile?.display_name ?? "";
+  const avatarUrl =
+    typeof profile?.avatar_url === "string" && profile.avatar_url.trim().length > 0
+      ? profile.avatar_url.trim()
+      : null;
 
   return (
     <MemberPageShell>
@@ -32,7 +37,8 @@ export default async function SettingsPage() {
           Profile settings
         </h1>
         <p className="max-w-lg text-sm text-zinc-600 dark:text-zinc-400">
-          Update how your name appears across the member graph and profile views.
+          Update your photo and how your name appears across the member graph and
+          profile views.
         </p>
         <Link
           href={`/u/${user.id}`}
@@ -46,7 +52,22 @@ export default async function SettingsPage() {
       </header>
 
       <MemberGlassSection
+        tone="violet"
+        withTopRule={false}
+        icon={
+          <span className="text-base" aria-hidden>
+            ◉
+          </span>
+        }
+        title="Profile photo"
+        description="Square or wide images work — we crop to a circle on your profile."
+      >
+        <AvatarSettings displayName={displayName} initialAvatarUrl={avatarUrl} />
+      </MemberGlassSection>
+
+      <MemberGlassSection
         tone="emerald"
+        withTopRule={false}
         icon={
           <span className="text-base" aria-hidden>
             ◇

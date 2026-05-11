@@ -1,8 +1,44 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+
+const DUMMY_PREVIEW_COUNT = 5;
+const DUMMY_PREVIEW_MIN_CHARS = 2;
+
+/** Placeholder names only — never written to the database. Pool must stay larger than `DUMMY_PREVIEW_COUNT`. */
+const DUMMY_NAME_POOL = [
+  "Alex Rivera",
+  "Jordan Kim",
+  "Sam Okonkwo",
+  "Riley Chen",
+  "Morgan Blake",
+  "Casey Mbatha",
+  "Taylor Nguyen",
+  "Jamie Okafor",
+  "Quinn Patel",
+  "Avery Santos",
+  "Rowan Kovács",
+  "Drew Matsumoto",
+  "Reese Adeyemi",
+  "Hayden Popescu",
+  "Blake Al-Farsi",
+] as const;
+
+function pickDummyNamesForInterestSeed(seed: string, count: number): string[] {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  const start = Math.abs(h) % DUMMY_NAME_POOL.length;
+  const out: string[] = [];
+  for (let i = 0; i < count; i++) {
+    out.push(DUMMY_NAME_POOL[(start + i) % DUMMY_NAME_POOL.length]!);
+  }
+  return out;
+}
 
 export type InterestItem = {
   interest_id: string;
@@ -20,6 +56,17 @@ export function InterestsSection({ userId, initialInterests }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [removing, setRemoving] = useState<string | null>(null);
+
+  const trimmedLabel = label.trim();
+  const dummyPreviewNames = useMemo(() => {
+    if (trimmedLabel.length < DUMMY_PREVIEW_MIN_CHARS) {
+      return [];
+    }
+    return pickDummyNamesForInterestSeed(
+      trimmedLabel.toLowerCase(),
+      DUMMY_PREVIEW_COUNT,
+    );
+  }, [trimmedLabel]);
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
@@ -88,6 +135,35 @@ export function InterestsSection({ userId, initialInterests }: Props) {
           {loading ? "Saving…" : "Add"}
         </button>
       </form>
+
+      {dummyPreviewNames.length === DUMMY_PREVIEW_COUNT ? (
+        <div
+          className="rounded-2xl border border-amber-500/25 bg-amber-500/[0.06] px-4 py-3.5 dark:border-amber-400/20 dark:bg-amber-500/[0.07]"
+          aria-hidden
+        >
+          <ul className="flex flex-col gap-2">
+            {dummyPreviewNames.map((name) => (
+              <li
+                key={name}
+                className="flex items-center gap-2 rounded-lg border border-zinc-200/80 bg-white/60 px-3 py-2 text-sm font-medium text-zinc-800 dark:border-white/[0.08] dark:bg-zinc-900/40 dark:text-zinc-200"
+              >
+                <span
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-200/80 text-xs font-semibold text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                  aria-hidden
+                >
+                  {name
+                    .split(/\s+/)
+                    .map((p) => p[0])
+                    .join("")
+                    .slice(0, 2)
+                    .toUpperCase()}
+                </span>
+                <span>{name}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       {error ? (
         <p
